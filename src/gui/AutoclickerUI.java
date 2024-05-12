@@ -45,14 +45,20 @@ public class AutoclickerUI extends JFrame {
         logoPanel.add(logoLabel);
 
         // Toggle button for start/stop
-        toggleButton = new JToggleButton("Start");
+        toggleButton = new JToggleButton("Start CPS");
         toggleButton.setUI(new CustomToggleButtonUI());
-        toggleButton.addActionListener(e -> toggleClicking());
+        toggleButton.addActionListener(e -> {
+            toggleClicking();
+            ((CustomToggleButtonUI) toggleButton.getUI()).toggleButtonStateChanged(toggleButton);
+        });
 
         // Toggle button for theme switching
         themeToggleButton = new JToggleButton("Toggle Theme: Light");
         themeToggleButton.setUI(new CustomToggleButtonUI());
-        themeToggleButton.addActionListener(e -> toggleTheme());
+        themeToggleButton.addActionListener(e -> {
+            toggleTheme();
+            ((CustomToggleButtonUI) themeToggleButton.getUI()).toggleButtonStateChanged(themeToggleButton);
+        });
 
         buttonPanel = new JPanel();
         buttonPanel.add(toggleButton);
@@ -70,17 +76,20 @@ public class AutoclickerUI extends JFrame {
     }
 
     private void toggleClicking() {
-        isClicking = !isClicking; // Toggle state
-        toggleButton.setText(isClicking ? "Stop" : "Start");
+        isClicking = !isClicking;
+        toggleButton.setText(isClicking ? "Stop CPS" : "Start CPS");
+        toggleButton.setActionCommand(isClicking ? "Stop CPS" : "Start CPS");
         if (isClicking) {
-            autoClicker.startClicking((Integer) cpsChoice.getSelectedItem());
+            autoClicker.startClicking(cpsChoice.getItemAt(cpsChoice.getSelectedIndex()));
         } else {
             autoClicker.stopClicking();
         }
     }
 
     private void toggleTheme() {
-        darkMode = !darkMode; // Toggle state
+        darkMode = !darkMode;
+        themeToggleButton.setText(darkMode ? "Toggle Theme: Dark" : "Toggle Theme: Light");
+        themeToggleButton.setActionCommand(darkMode ? "Toggle Theme: Dark" : "Toggle Theme: Light");
         updateUI();
     }
 
