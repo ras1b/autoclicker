@@ -1,9 +1,19 @@
 package gui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+
 import features.Autoclicker;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
+import features.CustomToggleButtonUI;
 
 public class AutoclickerUI extends JFrame {
     private static final long serialVersionUID = 1L;
@@ -36,10 +46,12 @@ public class AutoclickerUI extends JFrame {
 
         // Toggle button for start/stop
         toggleButton = new JToggleButton("Start");
+        toggleButton.setUI(new CustomToggleButtonUI());
         toggleButton.addActionListener(e -> toggleClicking());
 
         // Toggle button for theme switching
         themeToggleButton = new JToggleButton("Toggle Theme: Light");
+        themeToggleButton.setUI(new CustomToggleButtonUI());
         themeToggleButton.addActionListener(e -> toggleTheme());
 
         buttonPanel = new JPanel();
@@ -59,18 +71,21 @@ public class AutoclickerUI extends JFrame {
 
     private void toggleClicking() {
         isClicking = !isClicking; // Toggle state
+        toggleButton.setText(isClicking ? "Stop" : "Start");
         if (isClicking) {
             autoClicker.startClicking((Integer) cpsChoice.getSelectedItem());
-            toggleButton.setText("Stop");
         } else {
             autoClicker.stopClicking();
-            toggleButton.setText("Start");
         }
     }
 
     private void toggleTheme() {
         darkMode = !darkMode; // Toggle state
-        Color backgroundColor = darkMode ? Color.decode("#141414") : Color.decode("#ffffff");
+        updateUI();
+    }
+
+    private void updateUI() {
+        Color backgroundColor = darkMode ? Color.decode("#141414") : Color.decode("#FFFFFF");
         Color textColor = darkMode ? Color.white : Color.black;
 
         cpsPanel.setBackground(backgroundColor);

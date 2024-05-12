@@ -27,6 +27,6 @@ public class Autoclicker {
 
     private void simulateClick() {
     	// This method would trigger a click. Here we're just simulating the action.
-    	System.out.println("Click performed"); // For debugging
+//    	System.out.println("Click performed"); // For debugging
     	}
     }

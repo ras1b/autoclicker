@@ -1,44 +1,52 @@
 package features;
 
-import javax.swing.*;
 import javax.swing.plaf.basic.BasicToggleButtonUI;
 import java.awt.*;
+import javax.swing.*;
 
-class CustomToggleButtonUI extends BasicToggleButtonUI {
-    private Color offColor = new Color(0xCCCCCC);
-    private Color onColor = new Color(0x4CAF50);
-    private Color handleColor = Color.WHITE;
+public class CustomToggleButtonUI extends BasicToggleButtonUI {
+    private final Color offColor = new Color(0xFF6347); // Red color for "off" state
+    private final Color onColor = new Color(0x4CAF50);  // Green color for "on" state
+    private final Color handleColor = Color.WHITE;
+    private int animationPosition = 0;  // To handle animation of the toggle
 
     @Override
-    protected void paintButtonPressed(Graphics g, AbstractButton b) {
-        if (b.isSelected()) {
-            paintBackground(g, b, onColor);
-        } else {
-            paintBackground(g, b, offColor);
-        }
+    public void installUI(JComponent c) {
+        super.installUI(c);
+        ((JToggleButton) c).setBorderPainted(false);
+        ((JToggleButton) c).setContentAreaFilled(false);
+        ((JToggleButton) c).setFocusPainted(false);
     }
 
     @Override
     public void paint(Graphics g, JComponent c) {
         AbstractButton b = (AbstractButton) c;
-        if (b.isSelected()) {
-            paintBackground(g, b, onColor);
-        } else {
-            paintBackground(g, b, offColor);
-        }
-        super.paint(g, c);
-    }
-
-    private void paintBackground(Graphics g, AbstractButton b, Color color) {
-        Graphics2D g2 = (Graphics2D) g;
+        Graphics2D g2 = (Graphics2D) g.create();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(color);
-        g2.fillRoundRect(0, 0, b.getWidth(), b.getHeight(), 30, 30);
-        g2.setColor(handleColor);
+
+        // Determine the position of the toggle based on its selection state
         if (b.isSelected()) {
-            g2.fillOval(b.getWidth() / 2, 1, b.getHeight() - 2, b.getHeight() - 2);
+            animationPosition = Math.min(animationPosition + 10, b.getWidth() - b.getHeight());
         } else {
-            g2.fillOval(1, 1, b.getHeight() - 2, b.getHeight() - 2);
+            animationPosition = Math.max(animationPosition - 10, 0);
         }
+
+        // Draw the background
+        g2.setColor(b.isSelected() ? onColor : offColor);
+        g2.fillRoundRect(0, 0, b.getWidth() - 1, b.getHeight() - 1, 30, 30);
+
+        // Draw the toggle
+        g2.setColor(handleColor);
+        g2.fillOval(animationPosition, 1, b.getHeight() - 2, b.getHeight() - 2);
+
+        g2.dispose();
+
+        // Repaint periodically to animate
+        SwingUtilities.invokeLater(() -> {
+            if ((b.isSelected() && animationPosition < b.getWidth() - b.getHeight()) ||
+                (!b.isSelected() && animationPosition > 0)) {
+                b.repaint();
+            }
+        });
     }
 }
