@@ -65,23 +65,23 @@ public class AutoclickerUI extends JFrame {
 
         cpsLabel = new JLabel("Select a CPS Level:");
         cpsChoice = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20});
-        cpsChoice.setPreferredSize(new Dimension(100, 20));
+        cpsChoice.setPreferredSize(new Dimension(250, 25));
         cpsLabel.setFont(customFont);
         cpsChoice.setFont(customFont);
 
         programLabel = new JLabel("Capture a program: ");
         programChoice = new JComboBox<>();
-        programChoice.setPreferredSize(new Dimension(200, 20));
+        programChoice.setPreferredSize(new Dimension(250, 25));
         programLabel.setFont(customFont);
         programChoice.setFont(customFont);
         loadRunningPrograms();
 
-        refreshButton = new JButton(new ImageIcon(new ImageIcon(REFRESH_ICON_PATH).getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
-        refreshButton.setPreferredSize(new Dimension(22, 19));
+        refreshButton = new JButton(new ImageIcon(new ImageIcon(REFRESH_ICON_PATH).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        refreshButton.setPreferredSize(new Dimension(25, 25));
         refreshButton.addActionListener(e -> loadRunningPrograms());
 
-        cancelButton = new JButton(new ImageIcon(new ImageIcon(CANCEL_ICON_PATH).getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
-        cancelButton.setPreferredSize(new Dimension(22, 19));
+        cancelButton = new JButton(new ImageIcon(new ImageIcon(CANCEL_ICON_PATH).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        cancelButton.setPreferredSize(new Dimension(25, 25));
         cancelButton.addActionListener(e -> programChoice.setSelectedItem("Specify a program"));
 
         ImageIcon logoIconOriginal = new ImageIcon("./img/translogo.png");
@@ -155,20 +155,32 @@ public class AutoclickerUI extends JFrame {
             .filter(ProcessHandle::isAlive)
             .map(ProcessHandle::info)
             .map(info -> info.command().orElse("") + " " + info.arguments().map(args -> String.join(" ", args)).orElse(""))
-            .filter(command -> !command.isEmpty() && !command.contains("Windows"))
+            .filter(command -> !command.isEmpty())
+            .map(command -> {
+                // Extract the executable name from the command string
+                String[] parts = command.split("[\\\\/]");
+                return parts.length > 0 ? parts[parts.length - 1] : command;
+            })
+            .filter(executable -> !executable.isEmpty())
+            .distinct() // Ensure there are no duplicate entries
             .forEach(programChoice::addItem);
     }
+
 
     private void toggleClicking() {
         isClicking = !isClicking;
         updateLabels();
         if (isClicking) {
             String selectedProgram = (String) programChoice.getSelectedItem();
-            autoClicker.startClicking(cpsChoice.getItemAt(cpsChoice.getSelectedIndex()), selectedProgram);
+            if (selectedProgram != null && !selectedProgram.equals("Specify a program")) {
+                int cps = cpsChoice.getItemAt(cpsChoice.getSelectedIndex());
+                autoClicker.startClicking(cps, selectedProgram);
+            }
         } else {
             autoClicker.stopClicking();
         }
     }
+
 
     private void toggleTheme() {
         darkMode = !darkMode;
