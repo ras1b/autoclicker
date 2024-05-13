@@ -39,8 +39,8 @@ public class Autoclicker {
 
     private void simulateClick() {
         // This method triggers an actual mouse click
-        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+//        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+//        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
         // Uncomment below for debugging purposes
         // System.out.println("Click performed");
     }
