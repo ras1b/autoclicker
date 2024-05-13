@@ -1,13 +1,23 @@
 package features;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.awt.event.InputEvent;
+
 import javax.swing.Timer;
 
 public class Autoclicker {
     private int clicksPerSecond;
     private Timer clickTimer;
+    private Robot robot; // Robot to perform mouse clicks
 
     public Autoclicker() {
-        this.clicksPerSecond = 0;  // Default CPS
+        this.clicksPerSecond = 0; // Default CPS
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
     }
 
     public void startClicking(int cps) {
@@ -15,8 +25,10 @@ public class Autoclicker {
         if (clickTimer != null) {
             clickTimer.stop();
         }
-        clickTimer = new Timer(1000 / clicksPerSecond, e -> simulateClick());
-        clickTimer.start();
+        if (cps > 0) {
+            clickTimer = new Timer(1000 / cps, e -> simulateClick());
+            clickTimer.start();
+        }
     }
 
     public void stopClicking() {
@@ -26,7 +38,10 @@ public class Autoclicker {
     }
 
     private void simulateClick() {
-    	// This method would trigger a click. Here we're just simulating the action.
-//    	System.out.println("Click performed"); // For debugging
-    	}
+        // This method triggers an actual mouse click
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+        // Uncomment below for debugging purposes
+        // System.out.println("Click performed");
     }
+}
