@@ -10,6 +10,7 @@ public class Autoclicker {
     private int clicksPerSecond;
     private Timer clickTimer;
     private Robot robot; // Robot to perform mouse clicks
+    private String targetProgram;
 
     public Autoclicker() {
         this.clicksPerSecond = 0; // Default CPS
@@ -20,13 +21,18 @@ public class Autoclicker {
         }
     }
 
-    public void startClicking(int cps) {
+    public void startClicking(int cps, String program) {
         this.clicksPerSecond = cps;
+        this.targetProgram = program;
         if (clickTimer != null) {
             clickTimer.stop();
         }
         if (cps > 0) {
-            clickTimer = new Timer(1000 / cps, e -> simulateClick());
+            clickTimer = new Timer(1000 / cps, e -> {
+                if (ApplicationFocusHelper.isApplicationFocused(targetProgram)) {
+                    simulateClick();
+                }
+            });
             clickTimer.start();
         }
     }
@@ -39,9 +45,7 @@ public class Autoclicker {
 
     private void simulateClick() {
         // This method triggers an actual mouse click
-//        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-//        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
-        // Uncomment below for debugging purposes
-        // System.out.println("Click performed");
+        robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+        robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
     }
 }

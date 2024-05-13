@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -35,6 +36,11 @@ public class AutoclickerUI extends JFrame {
     private static final String PREFS_NAME = "AutoclickerPreferences";
     private static final String THEME_KEY = "theme";
     private Preferences preferences;
+    private JComboBox<String> programChoice;
+    private JLabel programLabel;
+    private JButton refreshButton, cancelButton;
+    private static final String REFRESH_ICON_PATH = "./img/refresh.png";
+    private static final String CANCEL_ICON_PATH = "./img/cancel.png";
 
     public AutoclickerUI() {
         preferences = Preferences.userRoot().node(PREFS_NAME);
@@ -60,6 +66,21 @@ public class AutoclickerUI extends JFrame {
         cpsChoice.setPreferredSize(new Dimension(100, 20));
         cpsLabel.setFont(customFont);
         cpsChoice.setFont(customFont);
+
+        programLabel = new JLabel("Capture a program:");
+        programChoice = new JComboBox<>();
+        programChoice.setPreferredSize(new Dimension(200, 20));
+        programLabel.setFont(customFont);
+        programChoice.setFont(customFont);
+        loadRunningPrograms();
+
+        refreshButton = new JButton(new ImageIcon(new ImageIcon(REFRESH_ICON_PATH).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        refreshButton.setPreferredSize(new Dimension(25, 25));
+        refreshButton.addActionListener(e -> loadRunningPrograms());
+
+        cancelButton = new JButton(new ImageIcon(new ImageIcon(CANCEL_ICON_PATH).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        cancelButton.setPreferredSize(new Dimension(25, 25));
+        cancelButton.addActionListener(e -> programChoice.setSelectedItem("Specify a program"));
 
         ImageIcon logoIconOriginal = new ImageIcon("./img/translogo.png");
         Image image = logoIconOriginal.getImage();
@@ -101,6 +122,10 @@ public class AutoclickerUI extends JFrame {
         cpsPanel = new JPanel();
         cpsPanel.add(cpsLabel);
         cpsPanel.add(cpsChoice);
+        cpsPanel.add(programLabel);
+        cpsPanel.add(programChoice);
+        cpsPanel.add(refreshButton);
+        cpsPanel.add(cancelButton);
 
         add(logoPanel, BorderLayout.NORTH);
         add(cpsPanel, BorderLayout.CENTER);
@@ -111,11 +136,23 @@ public class AutoclickerUI extends JFrame {
         setVisible(true);
     }
 
+    private void loadRunningPrograms() {
+        programChoice.removeAllItems();
+        programChoice.addItem("Specify a program");
+        ProcessHandle.allProcesses()
+            .filter(ProcessHandle::isAlive)
+            .map(ProcessHandle::info)
+            .map(info -> info.command().orElse("") + " " + info.arguments().map(args -> String.join(" ", args)).orElse(""))
+            .filter(command -> !command.isEmpty() && !command.contains("Windows"))
+            .forEach(programChoice::addItem);
+    }
+
     private void toggleClicking() {
         isClicking = !isClicking;
         updateLabels();
         if (isClicking) {
-            autoClicker.startClicking(cpsChoice.getItemAt(cpsChoice.getSelectedIndex()));
+            String selectedProgram = (String) programChoice.getSelectedItem();
+            autoClicker.startClicking(cpsChoice.getItemAt(cpsChoice.getSelectedIndex()), selectedProgram);
         } else {
             autoClicker.stopClicking();
         }
@@ -142,6 +179,9 @@ public class AutoclickerUI extends JFrame {
         toggleButtonLabel.setForeground(textColor);
         themeToggleButton.setForeground(textColor);
         themeToggleButtonLabel.setForeground(textColor);
+        programLabel.setForeground(textColor);
+        programChoice.setBackground(backgroundColor);
+        programChoice.setForeground(textColor);
     }
 
     private void updateLabels() {
