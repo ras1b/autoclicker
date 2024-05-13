@@ -9,6 +9,7 @@ import java.awt.FontFormatException;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -31,8 +32,14 @@ public class AutoclickerUI extends JFrame {
     private boolean isClicking = false;
     private boolean darkMode = false;
     private Font customFont;
+    private static final String PREFS_NAME = "AutoclickerPreferences";
+    private static final String THEME_KEY = "theme";
+    private Preferences preferences;
 
     public AutoclickerUI() {
+        preferences = Preferences.userRoot().node(PREFS_NAME);
+        darkMode = preferences.getBoolean(THEME_KEY, false); // Load the saved theme preference
+
         setTitle("Autoclicker by ras1b");
         setSize(500, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -63,13 +70,13 @@ public class AutoclickerUI extends JFrame {
         logoPanel.add(logoLabel);
 
         toggleButton = new JToggleButton("Status: Inactive");
-        themeToggleButton = new JToggleButton("Theme: Light");
+        themeToggleButton = new JToggleButton(darkMode ? "Theme: Dark" : "Theme: Light");
 
         toggleButton.setUI(new CustomToggleButtonUI());
         themeToggleButton.setUI(new CustomToggleButtonUI());
 
         toggleButtonLabel = new JLabel("Status: Inactive");
-        themeToggleButtonLabel = new JLabel("Theme: Light");
+        themeToggleButtonLabel = new JLabel(darkMode ? "Theme: Dark" : "Theme: Light");
 
         toggleButton.addActionListener(e -> {
             toggleClicking();
@@ -100,6 +107,7 @@ public class AutoclickerUI extends JFrame {
         add(buttonPanel, BorderLayout.SOUTH);
 
         autoClicker = new Autoclicker();
+        updateUI(); // Apply the saved theme preference
         setVisible(true);
     }
 
@@ -115,6 +123,7 @@ public class AutoclickerUI extends JFrame {
 
     private void toggleTheme() {
         darkMode = !darkMode;
+        preferences.putBoolean(THEME_KEY, darkMode); // Save the theme preference
         updateLabels();
     }
 
