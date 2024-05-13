@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
@@ -67,19 +69,19 @@ public class AutoclickerUI extends JFrame {
         cpsLabel.setFont(customFont);
         cpsChoice.setFont(customFont);
 
-        programLabel = new JLabel("Capture a program:");
+        programLabel = new JLabel("Capture a program: ");
         programChoice = new JComboBox<>();
         programChoice.setPreferredSize(new Dimension(200, 20));
         programLabel.setFont(customFont);
         programChoice.setFont(customFont);
         loadRunningPrograms();
 
-        refreshButton = new JButton(new ImageIcon(new ImageIcon(REFRESH_ICON_PATH).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
-        refreshButton.setPreferredSize(new Dimension(25, 25));
+        refreshButton = new JButton(new ImageIcon(new ImageIcon(REFRESH_ICON_PATH).getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
+        refreshButton.setPreferredSize(new Dimension(22, 19));
         refreshButton.addActionListener(e -> loadRunningPrograms());
 
-        cancelButton = new JButton(new ImageIcon(new ImageIcon(CANCEL_ICON_PATH).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
-        cancelButton.setPreferredSize(new Dimension(25, 25));
+        cancelButton = new JButton(new ImageIcon(new ImageIcon(CANCEL_ICON_PATH).getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH)));
+        cancelButton.setPreferredSize(new Dimension(22, 19));
         cancelButton.addActionListener(e -> programChoice.setSelectedItem("Specify a program"));
 
         ImageIcon logoIconOriginal = new ImageIcon("./img/translogo.png");
@@ -119,13 +121,23 @@ public class AutoclickerUI extends JFrame {
         buttonPanel.add(themeToggleButtonLabel);
         buttonPanel.add(themeToggleButton);
 
-        cpsPanel = new JPanel();
-        cpsPanel.add(cpsLabel);
-        cpsPanel.add(cpsChoice);
-        cpsPanel.add(programLabel);
-        cpsPanel.add(programChoice);
-        cpsPanel.add(refreshButton);
-        cpsPanel.add(cancelButton);
+        cpsPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        cpsPanel.add(cpsLabel, gbc);
+        gbc.gridx = 1;
+        cpsPanel.add(cpsChoice, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        cpsPanel.add(programLabel, gbc);
+        gbc.gridx = 1;
+        cpsPanel.add(programChoice, gbc);
+        gbc.gridx = 2;
+        cpsPanel.add(refreshButton, gbc);
+        gbc.gridx = 3;
+        cpsPanel.add(cancelButton, gbc);
 
         add(logoPanel, BorderLayout.NORTH);
         add(cpsPanel, BorderLayout.CENTER);
