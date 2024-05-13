@@ -3,7 +3,12 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -11,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.plaf.FontUIResource;
 
 import features.Autoclicker;
 import features.CustomToggleButtonUI;
@@ -19,22 +25,34 @@ public class AutoclickerUI extends JFrame {
     private static final long serialVersionUID = 1L;
     private JComboBox<Integer> cpsChoice;
     private JToggleButton toggleButton, themeToggleButton;
-    private Autoclicker autoClicker;
-    private JLabel cpsLabel;
+    private JLabel cpsLabel, toggleButtonLabel, themeToggleButtonLabel;
     private JPanel buttonPanel, cpsPanel, logoPanel;
+    private Autoclicker autoClicker;
     private boolean isClicking = false;
     private boolean darkMode = false;
+    private Font customFont;
 
     public AutoclickerUI() {
         setTitle("Autoclicker by ras1b");
         setSize(500, 300);
-        setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setIconImage(new ImageIcon("./img/translogo.png").getImage());
+        setLayout(new BorderLayout());
+        setIconImage(new ImageIcon("./img/logo.png").getImage());
+
+        // Load and set the custom font
+        try {
+            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("./font/LoveDays.ttf")).deriveFont(12f);
+            setFont(new FontUIResource(customFont));
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+            customFont = new JLabel().getFont(); // Use default font if custom font fails to load
+        }
 
         cpsLabel = new JLabel("Select a CPS Level:");
         cpsChoice = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20});
         cpsChoice.setPreferredSize(new Dimension(100, 20));
+        cpsLabel.setFont(customFont);
+        cpsChoice.setFont(customFont);
 
         ImageIcon logoIconOriginal = new ImageIcon("./img/translogo.png");
         Image image = logoIconOriginal.getImage();
@@ -44,30 +62,40 @@ public class AutoclickerUI extends JFrame {
         logoPanel = new JPanel();
         logoPanel.add(logoLabel);
 
-        // Toggle button for start/stop
-        toggleButton = new JToggleButton("Start CPS");
+        toggleButton = new JToggleButton("Status: Inactive");
+        themeToggleButton = new JToggleButton("Theme: Light");
+
         toggleButton.setUI(new CustomToggleButtonUI());
+        themeToggleButton.setUI(new CustomToggleButtonUI());
+
+        toggleButtonLabel = new JLabel("Status: Inactive");
+        themeToggleButtonLabel = new JLabel("Theme: Light");
+
         toggleButton.addActionListener(e -> {
             toggleClicking();
-            ((CustomToggleButtonUI) toggleButton.getUI()).toggleButtonStateChanged(toggleButton);
+            ((CustomToggleButtonUI)toggleButton.getUI()).toggleButtonStateChanged(toggleButton);
         });
-
-        // Toggle button for theme switching
-        themeToggleButton = new JToggleButton("Toggle Theme: Light");
-        themeToggleButton.setUI(new CustomToggleButtonUI());
         themeToggleButton.addActionListener(e -> {
             toggleTheme();
-            ((CustomToggleButtonUI) themeToggleButton.getUI()).toggleButtonStateChanged(themeToggleButton);
+            ((CustomToggleButtonUI)themeToggleButton.getUI()).toggleButtonStateChanged(themeToggleButton);
         });
 
-        buttonPanel = new JPanel();
+        toggleButtonLabel.setFont(customFont);
+        themeToggleButtonLabel.setFont(customFont);
+        toggleButton.setFont(customFont);
+        themeToggleButton.setFont(customFont);
+
+        buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        buttonPanel.add(toggleButtonLabel);
         buttonPanel.add(toggleButton);
+        buttonPanel.add(themeToggleButtonLabel);
         buttonPanel.add(themeToggleButton);
 
-        add(logoPanel, BorderLayout.NORTH);
         cpsPanel = new JPanel();
         cpsPanel.add(cpsLabel);
         cpsPanel.add(cpsChoice);
+
+        add(logoPanel, BorderLayout.NORTH);
         add(cpsPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -77,8 +105,7 @@ public class AutoclickerUI extends JFrame {
 
     private void toggleClicking() {
         isClicking = !isClicking;
-        toggleButton.setText(isClicking ? "Stop CPS" : "Start CPS");
-        toggleButton.setActionCommand(isClicking ? "Stop CPS" : "Start CPS");
+        updateLabels();
         if (isClicking) {
             autoClicker.startClicking(cpsChoice.getItemAt(cpsChoice.getSelectedIndex()));
         } else {
@@ -88,9 +115,7 @@ public class AutoclickerUI extends JFrame {
 
     private void toggleTheme() {
         darkMode = !darkMode;
-        themeToggleButton.setText(darkMode ? "Toggle Theme: Dark" : "Toggle Theme: Light");
-        themeToggleButton.setActionCommand(darkMode ? "Toggle Theme: Dark" : "Toggle Theme: Light");
-        updateUI();
+        updateLabels();
     }
 
     private void updateUI() {
@@ -104,10 +129,18 @@ public class AutoclickerUI extends JFrame {
         cpsLabel.setForeground(textColor);
         cpsChoice.setBackground(backgroundColor);
         cpsChoice.setForeground(textColor);
-
         toggleButton.setForeground(textColor);
-        themeToggleButton.setText(darkMode ? "Toggle Theme: Dark" : "Toggle Theme: Light");
+        toggleButtonLabel.setForeground(textColor);
         themeToggleButton.setForeground(textColor);
+        themeToggleButtonLabel.setForeground(textColor);
+    }
+
+    private void updateLabels() {
+        toggleButton.setText(isClicking ? "Status: Active" : "Status: Inactive");
+        themeToggleButton.setText(darkMode ? "Theme: Dark" : "Theme: Light");
+        toggleButtonLabel.setText(isClicking ? "Status: Active" : "Status: Inactive");
+        themeToggleButtonLabel.setText(darkMode ? "Theme: Dark" : "Theme: Light");
+        updateUI();
     }
 
     public static void main(String[] args) {
