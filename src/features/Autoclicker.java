@@ -25,14 +25,20 @@ public class Autoclicker {
             clickTimer.stop();
         }
         if (cps > 0) {
-            int delay = 500 / cps; // Calculate delay in milliseconds
+            int delay = 1000 / cps; // Calculate delay in milliseconds
             clickTimer = new Timer(delay, e -> {
+                long startTime = System.nanoTime();
                 if (targetProgram == null || ApplicationFocusHelper.isMouseOverAndFocusedWindow(targetProgram)) {
                     isAutomatedClick = true;
                     simulateClick();
                     isAutomatedClick = false;
                 }
+                long elapsedTime = System.nanoTime() - startTime;
+                int adjustment = (int) (elapsedTime / 1000000); // Convert to milliseconds
+                clickTimer.setInitialDelay(delay - adjustment); // Adjust delay for next click
+                clickTimer.setDelay(delay - adjustment);
             });
+            clickTimer.setRepeats(true);
             clickTimer.start();
         }
     }
