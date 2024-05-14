@@ -26,11 +26,8 @@ public class Autoclicker {
         if (cps > 0) {
             int delay = 1000 / cps; // Calculate delay in milliseconds
             clickTimer = new Timer(delay, e -> {
-                if (targetProgram == null || ApplicationFocusHelper.isMouseOverWindow(targetProgram)) {
-//                    System.out.println("Autoclicking for program: " + targetProgram); // Debug output
+                if (targetProgram == null || ApplicationFocusHelper.isMouseOverAndFocusedWindow(targetProgram)) {
                     simulateClick();
-                } else {
-//                    System.out.println("Mouse not over the specified program: " + targetProgram); // Debug output
                 }
             });
             clickTimer.start();

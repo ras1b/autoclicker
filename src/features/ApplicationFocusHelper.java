@@ -72,11 +72,11 @@ public class ApplicationFocusHelper {
     }
 
     /**
-     * Checks if the mouse is over the specified window and prints the window title if true.
+     * Checks if the mouse is over the specified window and the window is focused.
      * @param windowTitle The title of the window to check.
-     * @return true if the mouse is over the specified window, false otherwise.
+     * @return true if the mouse is over the specified window and it is focused, false otherwise.
      */
-    public static boolean isMouseOverWindow(String windowTitle) {
+    public static boolean isMouseOverAndFocusedWindow(String windowTitle) {
         HWND hwnd = User32.INSTANCE.FindWindow(null, windowTitle);
         if (hwnd == null) {
             return false;
@@ -86,11 +86,11 @@ public class ApplicationFocusHelper {
         User32.INSTANCE.GetWindowRect(hwnd, rect);
         Point mousePoint = MouseInfo.getPointerInfo().getLocation();
 
-        if (rect.left <= mousePoint.x && mousePoint.x <= rect.right && rect.top <= mousePoint.y && mousePoint.y <= rect.bottom) {
-//            System.out.println("Mouse is over window: " + windowTitle);
-            return true;
+        HWND foregroundWindow = User32.INSTANCE.GetForegroundWindow();
+        if (foregroundWindow == null || !foregroundWindow.equals(hwnd)) {
+            return false;
         }
 
-        return false;
+        return rect.left <= mousePoint.x && mousePoint.x <= rect.right && rect.top <= mousePoint.y && mousePoint.y <= rect.bottom;
     }
 }
