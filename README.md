@@ -37,7 +37,7 @@ Mouse Position Intelligence: Our autoclicker detects the focused application und
 ![image](https://github.com/ras1b/autoclicker/assets/28842497/4e037700-c3ba-48e5-ac61-12942ec78512)
 ![image](https://github.com/ras1b/autoclicker/assets/28842497/a60234bb-e66f-4174-9124-4891adf02ae0)
 
-[Quick Download] 
+[Quick Download] (https://github.com/ras1b/autoclicker/releases/tag/v1.01)
 
 ## 📋 Installation and Usage
 Download: Grab the latest version of AutoClicker by ras1b from our GitHub Releases or GitLab.
