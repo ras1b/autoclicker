@@ -1,5 +1,5 @@
 # 🎉 AutoClicker by ras1b [v1.0] - Beta Release 🎉
-## Welcome to the official release of AutoClicker by ras1b [v1.0]! 🚀 Get ready to experience the next level of automated clicking with my innovative and feature-packed autoclicker. Whether you're gaming, working, or just having fun, AutoClicker by ras1b has got you covered. Let's dive into the exciting features that make this autoclicker stand out from the crowd! 💥
+### Welcome to the official release of AutoClicker by ras1b [v1.0]! 🚀 Get ready to experience the next level of automated clicking with my innovative and feature-packed autoclicker. Whether you're gaming, working, or just having fun, AutoClicker by ras1b has got you covered. Let's dive into the exciting features that make this autoclicker stand out from the crowd! 💥
 
 ![refinelogo](https://github.com/ras1b/autoclicker/assets/28842497/698b853c-b2d1-434a-8555-62a26b465730)
 
