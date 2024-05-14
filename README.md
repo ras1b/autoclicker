@@ -1,93 +1,61 @@
-# Autoclicker
+# 🎉 AutoClicker by ras1b [v1.0] - Beta Release 🎉
+### Welcome to the official release of AutoClicker by ras1b [v1.0]! 🚀 Get ready to experience the next level of automated clicking with my innovative and feature-packed autoclicker. Whether you're gaming, working, or just having fun, AutoClicker by ras1b has got you covered. Let's dive into the exciting features that make this autoclicker stand out from the crowd! 💥
 
+![refinelogo](https://github.com/ras1b/autoclicker/assets/28842497/698b853c-b2d1-434a-8555-62a26b465730)
 
+## 🌟 Key Features 🌟
+### 1. Customizable Click Speed (CPS)
+🖱️ Easily select your desired clicks per second (CPS) level with our intuitive dropdown menu. From a gentle 1 CPS to a rapid-fire 20 CPS, you have full control over your clicking speed.
 
-## Getting started
+### 2. Program-Specific Clicking
+🖥️ Capture and target specific programs with ease! Select a running program from the list, and AutoClicker by ras1b will ensure clicks are sent only to that application, leaving the rest of your desktop untouched.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### 3. Global Hotkey Assignment
+⌨️ Assign a global hotkey or mouse button to start and stop the autoclicker on the fly. No more switching windows or fumbling with controls. Just one press, and you're good to go!
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### 4. Light and Dark Mode
+🌗 Switch between light and dark themes to match your preferences or the time of day. Your theme preference is saved automatically, so it's always just the way you like it.
 
-## Add your files
+### 5. Modern UI Design
+🎨 Enjoy a sleek and modern user interface with custom fonts, stylish icons, and intuitive controls. Our design ensures that everything is at your fingertips without any clutter.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### 6. Smart Mouse Position Check
+📍 Our continuous mouse position check feature ensures that the autoclicker is always targeting the right window. It intelligently detects the focused application under your mouse.
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/ras1b/autoclicker.git
-git branch -M main
-git push -uf origin main
-```
+### 7. Easy Access to Social Media and Support
+🔗 Quickly navigate to my GitLab, GitHub, and Discord to directly contact me and Stay updated with the latest features, report issues, and join our community!
 
-## Integrate with your tools
+🚀 How AutoClicker by ras1b Differs from Regular Autoclickers
+AutoClicker by ras1b isn't just another autoclicker — it's an innovative tool designed with user convenience and advanced features in mind. Here's how it stands out:
 
-- [ ] [Set up project integrations](https://gitlab.com/ras1b/autoclicker/-/settings/integrations)
+Program-Specific Clicking: Unlike traditional autoclickers that click everywhere, our autoclicker targets only the selected program, ensuring precision and efficiency.
+Global Hotkey Assignment: Set and forget! Assign a global hotkey to control the autoclicker without switching windows.
+Theme Switching: Seamlessly switch between light and dark modes to suit your environment.
+Custom UI: Enjoy a modern and aesthetically pleasing interface with custom fonts and icons.
+Mouse Position Intelligence: Our autoclicker detects the focused application under your mouse, ensuring clicks are sent where they're needed most.
+📸 Screenshots
+![image](https://github.com/ras1b/autoclicker/assets/28842497/4e037700-c3ba-48e5-ac61-12942ec78512)
+![image](https://github.com/ras1b/autoclicker/assets/28842497/a60234bb-e66f-4174-9124-4891adf02ae0)
 
-## Collaborate with your team
+[Quick Download] 
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+## 📋 Installation and Usage
+Download: Grab the latest version of AutoClicker by ras1b from our GitHub Releases or GitLab.
+Run: Open the application by double-clicking the executable file.
+Set CPS: Use the dropdown menu to select your desired CPS level.
+[Optional] Capture Program: Choose the program you want to target from the list.
+[Optional] Assign Hotkey: Click on "Assign CPS Hotkey" and press your preferred key or mouse button.
+Toggle Clicker: Use the toggle button to activate or deactivate the autoclicker.
+Switch Theme: Use the theme toggle button to switch between light and dark modes.
+Social Media: Click on the social media icons to visit our GitLab, GitHub, and Discord.
+🙌 Contributing
+We welcome contributions from the community! If you have any suggestions, feature requests, or bug reports, please visit our GitHub Issues page or join our Discord for discussions.
 
-## Test and Deploy
+📜 License
+This project is licensed under the MIT License. See the LICENSE file for more details.
 
-Use the built-in continuous integration in GitLab.
+💖 Acknowledgements
+Thank you to everyone who has supported this project by using it. Your feedback and enthusiasm are invaluable.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+Download AutoClicker by ras1b [v1.0] today and take your productivity to the next level! 🚀✨
 
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
