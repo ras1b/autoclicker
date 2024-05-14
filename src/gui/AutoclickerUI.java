@@ -219,7 +219,7 @@ public class AutoclickerUI extends JFrame {
             List<String> titles = ApplicationFocusHelper.getTopLevelWindowTitles();
             for (String title : titles) {
                 if (ApplicationFocusHelper.isMouseOverWindow(title)) {
-                    System.out.println("Mouse is over: " + title);
+//                    System.out.println("Mouse is over: " + title);
                     break;
                 }
             }
