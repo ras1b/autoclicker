@@ -1,27 +1,28 @@
-🎉 AutoClicker by ras1b [v1.0] - Beta Release 🎉
-Welcome to the official release of AutoClicker by ras1b [v1.0]! 🚀 Get ready to experience the next level of automated clicking with my innovative and feature-packed autoclicker. Whether you're gaming, working, or just having fun, AutoClicker by ras1b has got you covered. Let's dive into the exciting features that make this autoclicker stand out from the crowd! 💥
-![logo](https://github.com/ras1b/autoclicker/assets/28842497/075439ee-24a5-494e-a92f-de88af6a1c5d)
+# 🎉 AutoClicker by ras1b [v1.0] - Beta Release 🎉
+## Welcome to the official release of AutoClicker by ras1b [v1.0]! 🚀 Get ready to experience the next level of automated clicking with my innovative and feature-packed autoclicker. Whether you're gaming, working, or just having fun, AutoClicker by ras1b has got you covered. Let's dive into the exciting features that make this autoclicker stand out from the crowd! 💥
 
-🌟 Key Features 🌟
-1. Customizable Click Speed (CPS)
+![refinelogo](https://github.com/ras1b/autoclicker/assets/28842497/698b853c-b2d1-434a-8555-62a26b465730)
+
+## 🌟 Key Features 🌟
+### 1. Customizable Click Speed (CPS)
 🖱️ Easily select your desired clicks per second (CPS) level with our intuitive dropdown menu. From a gentle 1 CPS to a rapid-fire 20 CPS, you have full control over your clicking speed.
 
-2. Program-Specific Clicking
+### 2. Program-Specific Clicking
 🖥️ Capture and target specific programs with ease! Select a running program from the list, and AutoClicker by ras1b will ensure clicks are sent only to that application, leaving the rest of your desktop untouched.
 
-3. Global Hotkey Assignment
+### 3. Global Hotkey Assignment
 ⌨️ Assign a global hotkey or mouse button to start and stop the autoclicker on the fly. No more switching windows or fumbling with controls. Just one press, and you're good to go!
 
-4. Light and Dark Mode
+### 4. Light and Dark Mode
 🌗 Switch between light and dark themes to match your preferences or the time of day. Your theme preference is saved automatically, so it's always just the way you like it.
 
-5. Modern UI Design
+### 5. Modern UI Design
 🎨 Enjoy a sleek and modern user interface with custom fonts, stylish icons, and intuitive controls. Our design ensures that everything is at your fingertips without any clutter.
 
-6. Smart Mouse Position Check
+### 6. Smart Mouse Position Check
 📍 Our continuous mouse position check feature ensures that the autoclicker is always targeting the right window. It intelligently detects the focused application under your mouse.
 
-7. Easy Access to Social Media and Support
+### 7. Easy Access to Social Media and Support
 🔗 Quickly navigate to my GitLab, GitHub, and Discord to directly contact me and Stay updated with the latest features, report issues, and join our community!
 
 🚀 How AutoClicker by ras1b Differs from Regular Autoclickers
@@ -36,10 +37,10 @@ Mouse Position Intelligence: Our autoclicker detects the focused application und
 ![image](https://github.com/ras1b/autoclicker/assets/28842497/4e037700-c3ba-48e5-ac61-12942ec78512)
 ![image](https://github.com/ras1b/autoclicker/assets/28842497/a60234bb-e66f-4174-9124-4891adf02ae0)
 
+[Quick Download] 
 
-
-📋 Installation and Usage
-Download: Grab the latest version of AutoClicker by ras1b from our GitHub Releases or GitLab. [Quick Download]
+## 📋 Installation and Usage
+Download: Grab the latest version of AutoClicker by ras1b from our GitHub Releases or GitLab.
 Run: Open the application by double-clicking the executable file.
 Set CPS: Use the dropdown menu to select your desired CPS level.
 [Optional] Capture Program: Choose the program you want to target from the list.
