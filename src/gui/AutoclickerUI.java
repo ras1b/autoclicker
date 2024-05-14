@@ -55,6 +55,7 @@ public class AutoclickerUI extends JFrame {
     private int assignedKey = KeyEvent.VK_UNDEFINED;
     private int assignedMouseButton = -1; // -1 indicates no mouse button is assigned
     private Timer mouseHoldTimer; // Timer to detect mouse button hold
+    private JLabel copyrightLabel;
 
     public AutoclickerUI() {
         preferences = Preferences.userRoot().node(PREFS_NAME);
@@ -182,7 +183,7 @@ public class AutoclickerUI extends JFrame {
 
         // Footer panel with social media icons and copyright text
         footerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
-        JLabel copyrightLabel = new JLabel("Copyright " + java.time.Year.now().getValue() + " All rights reserved - Developed by ras1b");
+        copyrightLabel = new JLabel("Copyright " + java.time.Year.now().getValue() + " All rights reserved - Developed by ras1b");
         copyrightLabel.setFont(customFont);
 
         JButton gitlabButton = new JButton(new ImageIcon(new ImageIcon("./img/gitlab.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
@@ -283,6 +284,7 @@ public class AutoclickerUI extends JFrame {
         toggleButtonLabel.setForeground(isClicking ? Color.GREEN : Color.RED);
 
         themeToggleButtonLabel.setText(darkMode ? "Dark Mode" : "Light Mode");
+        copyrightLabel.setForeground(textColor); // Set the color of the copyright label
     }
 
     private void updateLabels() {
