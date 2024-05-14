@@ -6,13 +6,11 @@ import java.awt.event.InputEvent;
 import javax.swing.Timer;
 
 public class Autoclicker {
-    private int clicksPerSecond;
     private Timer clickTimer;
     private Robot robot; // Robot to perform mouse clicks
     private String targetProgram;
 
     public Autoclicker() {
-        this.clicksPerSecond = 0; // Default CPS
         try {
             robot = new Robot();
         } catch (AWTException e) {
@@ -21,7 +19,6 @@ public class Autoclicker {
     }
 
     public void startClicking(int cps, String program) {
-        this.clicksPerSecond = cps;
         this.targetProgram = program;
         if (clickTimer != null) {
             clickTimer.stop();
@@ -29,8 +26,11 @@ public class Autoclicker {
         if (cps > 0) {
             int delay = 1000 / cps; // Calculate delay in milliseconds
             clickTimer = new Timer(delay, e -> {
-                if (ApplicationFocusHelper.isApplicationFocused(targetProgram)) {
+                if (targetProgram == null || ApplicationFocusHelper.isMouseOverWindow(targetProgram)) {
+//                    System.out.println("Autoclicking for program: " + targetProgram); // Debug output
                     simulateClick();
+                } else {
+//                    System.out.println("Mouse not over the specified program: " + targetProgram); // Debug output
                 }
             });
             clickTimer.start();

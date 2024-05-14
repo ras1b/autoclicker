@@ -1,25 +1,96 @@
 package features;
 
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.Psapi;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef.HWND;
+import com.sun.jna.platform.win32.WinDef.RECT;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
+import com.sun.jna.ptr.IntByReference;
 
 public class ApplicationFocusHelper {
 
+    public interface WndEnumProc extends User32.WNDENUMPROC {
+        boolean callback(HWND hWnd, Pointer arg);
+    }
+
+    /**
+     * Retrieves the titles of all top-level windows.
+     * @return A list of window titles.
+     */
+    public static List<String> getTopLevelWindowTitles() {
+        final List<String> windowTitles = new ArrayList<>();
+
+        User32.INSTANCE.EnumWindows((hWnd, data) -> {
+            if (User32.INSTANCE.IsWindowVisible(hWnd)) {
+                char[] windowText = new char[512];
+                User32.INSTANCE.GetWindowText(hWnd, windowText, 512);
+                String wText = Native.toString(windowText).trim();
+                if (!wText.isEmpty()) {
+                    windowTitles.add(wText);
+                }
+            }
+            return true;
+        }, null);
+
+        return windowTitles;
+    }
+
     /**
      * Checks if the specified application window is currently focused.
-     * @param applicationName The name of the application window to check.
+     * @param processName The name of the application process to check.
      * @return true if the specified application is focused, false otherwise.
      */
-    public static boolean isApplicationFocused(String applicationName) {
+    public static boolean isApplicationFocused(String processName) {
         HWND hwnd = User32.INSTANCE.GetForegroundWindow();
         if (hwnd == null) {
             return false;
         }
 
-        char[] windowText = new char[512];
-        User32.INSTANCE.GetWindowText(hwnd, windowText, 512);
-        String currentWindow = new String(windowText).trim();
+        IntByReference pid = new IntByReference();
+        User32.INSTANCE.GetWindowThreadProcessId(hwnd, pid);
 
-        return currentWindow.contains(applicationName);
+        HANDLE process = Kernel32.INSTANCE.OpenProcess(Kernel32.PROCESS_QUERY_INFORMATION | Kernel32.PROCESS_VM_READ, false, pid.getValue());
+        if (process == null) {
+            return false;
+        }
+
+        char[] buffer = new char[512];
+        Psapi.INSTANCE.GetModuleFileNameExW(process, null, buffer, buffer.length);
+        Kernel32.INSTANCE.CloseHandle(process);
+
+        String currentProcess = Native.toString(buffer).trim();
+
+        return currentProcess.equalsIgnoreCase(processName);
+    }
+
+    /**
+     * Checks if the mouse is over the specified window and prints the window title if true.
+     * @param windowTitle The title of the window to check.
+     * @return true if the mouse is over the specified window, false otherwise.
+     */
+    public static boolean isMouseOverWindow(String windowTitle) {
+        HWND hwnd = User32.INSTANCE.FindWindow(null, windowTitle);
+        if (hwnd == null) {
+            return false;
+        }
+
+        RECT rect = new RECT();
+        User32.INSTANCE.GetWindowRect(hwnd, rect);
+        Point mousePoint = MouseInfo.getPointerInfo().getLocation();
+
+        if (rect.left <= mousePoint.x && mousePoint.x <= rect.right && rect.top <= mousePoint.y && mousePoint.y <= rect.bottom) {
+//            System.out.println("Mouse is over window: " + windowTitle);
+            return true;
+        }
+
+        return false;
     }
 }

@@ -11,6 +11,7 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
@@ -20,9 +21,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.plaf.FontUIResource;
 
 import features.Autoclicker;
+import features.ApplicationFocusHelper;
 import features.CustomToggleButtonUI;
 
 public class AutoclickerUI extends JFrame {
@@ -103,11 +107,11 @@ public class AutoclickerUI extends JFrame {
 
         toggleButton.addActionListener(e -> {
             toggleClicking();
-            ((CustomToggleButtonUI)toggleButton.getUI()).toggleButtonStateChanged(toggleButton);
+            ((CustomToggleButtonUI) toggleButton.getUI()).toggleButtonStateChanged(toggleButton);
         });
         themeToggleButton.addActionListener(e -> {
             toggleTheme();
-            ((CustomToggleButtonUI)themeToggleButton.getUI()).toggleButtonStateChanged(themeToggleButton);
+            ((CustomToggleButtonUI) themeToggleButton.getUI()).toggleButtonStateChanged(themeToggleButton);
         });
 
         toggleButtonLabel.setFont(customFont);
@@ -146,41 +150,34 @@ public class AutoclickerUI extends JFrame {
         autoClicker = new Autoclicker();
         updateUI(); // Apply the saved theme preference
         setVisible(true);
+
+        // Start continuous mouse position check
+        startMousePositionCheck();
     }
 
     private void loadRunningPrograms() {
         programChoice.removeAllItems();
         programChoice.addItem("Specify a program");
-        ProcessHandle.allProcesses()
-            .filter(ProcessHandle::isAlive)
-            .map(ProcessHandle::info)
-            .map(info -> info.command().orElse("") + " " + info.arguments().map(args -> String.join(" ", args)).orElse(""))
-            .filter(command -> !command.isEmpty())
-            .map(command -> {
-                // Extract the executable name from the command string
-                String[] parts = command.split("[\\\\/]");
-                return parts.length > 0 ? parts[parts.length - 1] : command;
-            })
-            .filter(executable -> !executable.isEmpty())
-            .distinct() // Ensure there are no duplicate entries
-            .forEach(programChoice::addItem);
-    }
 
+        List<String> titles = ApplicationFocusHelper.getTopLevelWindowTitles();
+        titles.forEach(programChoice::addItem);
+    }
 
     private void toggleClicking() {
         isClicking = !isClicking;
         updateLabels();
         if (isClicking) {
             String selectedProgram = (String) programChoice.getSelectedItem();
-            if (selectedProgram != null && !selectedProgram.equals("Specify a program")) {
-                int cps = cpsChoice.getItemAt(cpsChoice.getSelectedIndex());
+            int cps = cpsChoice.getItemAt(cpsChoice.getSelectedIndex());
+            if (selectedProgram == null || selectedProgram.equals("Specify a program")) {
+                autoClicker.startClicking(cps, null); // No specific program
+            } else {
                 autoClicker.startClicking(cps, selectedProgram);
             }
         } else {
             autoClicker.stopClicking();
         }
     }
-
 
     private void toggleTheme() {
         darkMode = !darkMode;
@@ -216,7 +213,21 @@ public class AutoclickerUI extends JFrame {
         updateUI();
     }
 
+    // New method to continuously check mouse position and print application name
+    private void startMousePositionCheck() {
+        Timer timer = new Timer(500, e -> {
+            List<String> titles = ApplicationFocusHelper.getTopLevelWindowTitles();
+            for (String title : titles) {
+                if (ApplicationFocusHelper.isMouseOverWindow(title)) {
+                    System.out.println("Mouse is over: " + title);
+                    break;
+                }
+            }
+        });
+        timer.start();
+    }
+
     public static void main(String[] args) {
-        new AutoclickerUI();
+        SwingUtilities.invokeLater(AutoclickerUI::new);
     }
 }
