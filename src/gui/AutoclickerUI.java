@@ -10,7 +10,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -65,11 +64,11 @@ public class AutoclickerUI extends JFrame {
         setSize(500, 350); // Increased height by 50
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-        setIconImage(new ImageIcon("./img/logo.png").getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/img/logo.png")).getImage());
 
         // Load and set the custom font
         try {
-            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("./font/LoveDays.ttf")).deriveFont(12f);
+            customFont = Font.createFont(Font.TRUETYPE_FONT, getClass().getResourceAsStream("/font/LoveDays.ttf")).deriveFont(12f);
             setFont(new FontUIResource(customFont));
         } catch (FontFormatException | IOException e) {
             e.printStackTrace();
@@ -89,15 +88,15 @@ public class AutoclickerUI extends JFrame {
         programChoice.setFont(customFont);
         loadRunningPrograms();
 
-        refreshButton = new JButton(new ImageIcon(new ImageIcon("./img/refresh.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        refreshButton = new JButton(new ImageIcon(new ImageIcon(getClass().getResource("/img/refresh.png")).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
         refreshButton.setPreferredSize(new Dimension(25, 25));
         refreshButton.addActionListener(e -> loadRunningPrograms());
 
-        cancelButton = new JButton(new ImageIcon(new ImageIcon("./img/cancel.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        cancelButton = new JButton(new ImageIcon(new ImageIcon(getClass().getResource("/img/cancel.png")).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
         cancelButton.setPreferredSize(new Dimension(25, 25));
         cancelButton.addActionListener(e -> programChoice.setSelectedItem("Specify a program"));
 
-        ImageIcon logoIconOriginal = new ImageIcon("./img/translogo.png");
+        ImageIcon logoIconOriginal = new ImageIcon(getClass().getResource("/img/translogo.png"));
         Image image = logoIconOriginal.getImage();
         Image newimg = image.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
         ImageIcon logoIcon = new ImageIcon(newimg);
@@ -135,7 +134,7 @@ public class AutoclickerUI extends JFrame {
         hotkeyButton.setFont(customFont);
         hotkeyButton.addActionListener(e -> assignHotkey());
 
-        hotkeyCancelButton = new JButton(new ImageIcon(new ImageIcon("./img/cancel.png").getImage().getScaledInstance(23, 23, Image.SCALE_SMOOTH)));
+        hotkeyCancelButton = new JButton(new ImageIcon(new ImageIcon(getClass().getResource("/img/cancel.png")).getImage().getScaledInstance(23, 23, Image.SCALE_SMOOTH)));
         hotkeyCancelButton.setPreferredSize(new Dimension(29, 29));
         hotkeyCancelButton.addActionListener(e -> {
             assignedKey = KeyEvent.VK_UNDEFINED;
@@ -186,15 +185,15 @@ public class AutoclickerUI extends JFrame {
         copyrightLabel = new JLabel("Copyright " + java.time.Year.now().getValue() + " All rights reserved - Developed by ras1b");
         copyrightLabel.setFont(customFont);
 
-        JButton gitlabButton = new JButton(new ImageIcon(new ImageIcon("./img/gitlab.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        JButton gitlabButton = new JButton(new ImageIcon(new ImageIcon(getClass().getResource("/img/gitlab.png")).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
         gitlabButton.setPreferredSize(new Dimension(25, 25));
         gitlabButton.addActionListener(e -> openURL("https://gitlab.com/ras1b"));
 
-        JButton githubButton = new JButton(new ImageIcon(new ImageIcon("./img/github.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        JButton githubButton = new JButton(new ImageIcon(new ImageIcon(getClass().getResource("/img/github.png")).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
         githubButton.setPreferredSize(new Dimension(25, 25));
         githubButton.addActionListener(e -> openURL("https://github.com/ras1b/autoclicker"));
 
-        JButton discordButton = new JButton(new ImageIcon(new ImageIcon("./img/discord.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        JButton discordButton = new JButton(new ImageIcon(new ImageIcon(getClass().getResource("/img/discord.png")).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
         discordButton.setPreferredSize(new Dimension(25, 25));
         discordButton.addActionListener(e -> {
             copyToClipboard("ras1b");
