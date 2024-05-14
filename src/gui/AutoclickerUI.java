@@ -10,7 +10,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -192,8 +191,8 @@ public class AutoclickerUI extends JFrame {
             ex.printStackTrace();
         }
 
-        GlobalScreen.addNativeKeyListener(new GlobalKeyListener());
-        GlobalScreen.addNativeMouseListener(new GlobalMouseListener());
+        GlobalScreen.addNativeKeyListener(globalKeyListener);
+        GlobalScreen.addNativeMouseListener(globalMouseListener);
     }
 
     private void loadRunningPrograms() {
@@ -223,8 +222,7 @@ public class AutoclickerUI extends JFrame {
     private void toggleTheme() {
         darkMode = !darkMode;
         preferences.putBoolean(THEME_KEY, darkMode); // Save the theme preference
-        themeToggleButton.setText(darkMode ? "Theme: Dark" : "Theme: Light");
-        updateUI();
+        updateLabels();
     }
 
     private void updateUI() {
@@ -248,40 +246,46 @@ public class AutoclickerUI extends JFrame {
         hotkeyButton.setForeground(textColor);
         toggleButton.setForeground(isClicking ? Color.GREEN : Color.RED);
         toggleButtonLabel.setForeground(isClicking ? Color.GREEN : Color.RED);
+        themeToggleButtonLabel.setText(darkMode ? "Dark Mode" : "Light Mode");
     }
 
     private void updateLabels() {
         toggleButton.setText(isClicking ? "Active" : "Inactive");
         toggleButtonLabel.setText(isClicking ? "Active" : "Inactive");
+        toggleButtonLabel.setForeground(isClicking ? Color.GREEN : Color.RED);
+        themeToggleButtonLabel.setText(darkMode ? "Dark Mode" : "Light Mode");
+        themeToggleButtonLabel.setForeground(darkMode ? Color.GREEN : Color.RED);
+        updateUI();
     }
 
     // Method to assign a hotkey
     private void assignHotkey() {
         hotkeyButton.setText("Press a key or mouse button...");
-        KeyListener keyListener = new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {}
 
+        // Clear previous listeners
+        GlobalScreen.removeNativeKeyListener(globalKeyListener);
+        GlobalScreen.removeNativeMouseListener(globalMouseListener);
+
+        // Add temporary listeners to capture the next key or mouse button press
+        NativeKeyListener tempKeyListener = new NativeKeyListener() {
             @Override
-            public void keyPressed(KeyEvent e) {
+            public void nativeKeyPressed(NativeKeyEvent e) {
                 assignedKey = e.getKeyCode();
                 assignedMouseButton = -1;
-                hotkeyButton.setText(KeyEvent.getKeyText(assignedKey));
-                removeKeyListener(this);
-                GlobalScreen.removeNativeMouseListener(mouseListener);
+                hotkeyButton.setText(NativeKeyEvent.getKeyText(assignedKey));
+                GlobalScreen.removeNativeKeyListener(this);
+                GlobalScreen.addNativeKeyListener(globalKeyListener);
+                GlobalScreen.addNativeMouseListener(globalMouseListener);
             }
 
             @Override
-            public void keyReleased(KeyEvent e) {}
-        };
-        addKeyListener(keyListener);
-        setFocusable(true);
-        requestFocusInWindow();
+            public void nativeKeyReleased(NativeKeyEvent e) {}
 
-        mouseListener = new NativeMouseInputListener() {
             @Override
-            public void nativeMouseClicked(NativeMouseEvent e) {}
+            public void nativeKeyTyped(NativeKeyEvent e) {}
+        };
 
+        NativeMouseInputListener tempMouseListener = new NativeMouseInputListener() {
             @Override
             public void nativeMousePressed(NativeMouseEvent e) {
                 assignedKey = KeyEvent.VK_UNDEFINED;
@@ -294,17 +298,15 @@ public class AutoclickerUI extends JFrame {
                 };
                 hotkeyButton.setText(buttonText);
                 GlobalScreen.removeNativeMouseListener(this);
+                GlobalScreen.addNativeKeyListener(globalKeyListener);
+                GlobalScreen.addNativeMouseListener(globalMouseListener);
             }
 
             @Override
-            public void nativeMouseReleased(NativeMouseEvent e) {
-                if (e.getButton() == assignedMouseButton && mouseHoldTimer != null && mouseHoldTimer.isRunning()) {
-                    mouseHoldTimer.stop();
-                    if (isClicking) {
-                        toggleClicking();
-                    }
-                }
-            }
+            public void nativeMouseReleased(NativeMouseEvent e) {}
+
+            @Override
+            public void nativeMouseClicked(NativeMouseEvent e) {}
 
             @Override
             public void nativeMouseMoved(NativeMouseEvent e) {}
@@ -313,12 +315,11 @@ public class AutoclickerUI extends JFrame {
             public void nativeMouseDragged(NativeMouseEvent e) {}
         };
 
-        GlobalScreen.addNativeMouseListener(mouseListener);
+        GlobalScreen.addNativeKeyListener(tempKeyListener);
+        GlobalScreen.addNativeMouseListener(tempMouseListener);
     }
 
-    private NativeMouseInputListener mouseListener;
-
-    private class GlobalKeyListener implements NativeKeyListener {
+    private final NativeKeyListener globalKeyListener = new NativeKeyListener() {
         @Override
         public void nativeKeyPressed(NativeKeyEvent e) {
             if (e.getKeyCode() == assignedKey) {
@@ -331,12 +332,9 @@ public class AutoclickerUI extends JFrame {
 
         @Override
         public void nativeKeyTyped(NativeKeyEvent e) {}
-    }
+    };
 
-    private class GlobalMouseListener implements NativeMouseInputListener {
-        @Override
-        public void nativeMouseClicked(NativeMouseEvent e) {}
-
+    private final NativeMouseInputListener globalMouseListener = new NativeMouseInputListener() {
         @Override
         public void nativeMousePressed(NativeMouseEvent e) {
             if (assignedMouseButton != -1 && e.getButton() == assignedMouseButton) {
@@ -368,7 +366,7 @@ public class AutoclickerUI extends JFrame {
 
         @Override
         public void nativeMouseDragged(NativeMouseEvent e) {}
-    }
+    };
 
     private void startAutoClicking() {
         if (!isClicking) {

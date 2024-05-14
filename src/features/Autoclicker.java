@@ -25,7 +25,7 @@ public class Autoclicker {
             clickTimer.stop();
         }
         if (cps > 0) {
-            int delay = 1000 / cps; // Calculate delay in milliseconds
+            int delay = 500 / cps; // Calculate delay in milliseconds
             clickTimer = new Timer(delay, e -> {
                 if (targetProgram == null || ApplicationFocusHelper.isMouseOverAndFocusedWindow(targetProgram)) {
                     isAutomatedClick = true;
