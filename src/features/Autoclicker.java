@@ -9,6 +9,7 @@ public class Autoclicker {
     private Timer clickTimer;
     private Robot robot; // Robot to perform mouse clicks
     private String targetProgram;
+    private boolean isAutomatedClick = false;
 
     public Autoclicker() {
         try {
@@ -27,7 +28,9 @@ public class Autoclicker {
             int delay = 1000 / cps; // Calculate delay in milliseconds
             clickTimer = new Timer(delay, e -> {
                 if (targetProgram == null || ApplicationFocusHelper.isMouseOverAndFocusedWindow(targetProgram)) {
+                    isAutomatedClick = true;
                     simulateClick();
+                    isAutomatedClick = false;
                 }
             });
             clickTimer.start();
@@ -38,6 +41,10 @@ public class Autoclicker {
         if (clickTimer != null) {
             clickTimer.stop();
         }
+    }
+
+    public boolean isAutomatedClick() {
+        return isAutomatedClick;
     }
 
     private void simulateClick() {

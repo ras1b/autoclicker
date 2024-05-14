@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.prefs.Preferences;
-
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -26,17 +25,23 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.plaf.FontUIResource;
-
-import features.Autoclicker;
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.NativeHookException;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
+import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
+import com.github.kwhat.jnativehook.mouse.NativeMouseInputListener;
 import features.ApplicationFocusHelper;
+import features.Autoclicker;
 import features.CustomToggleButtonUI;
 
 public class AutoclickerUI extends JFrame {
     private static final long serialVersionUID = 1L;
     private JComboBox<Integer> cpsChoice;
     private JToggleButton toggleButton, themeToggleButton;
-    private JLabel cpsLabel, toggleButtonLabel, themeToggleButtonLabel;
+    private JLabel cpsLabel, toggleButtonLabel, themeToggleButtonLabel, hotkeyLabel, programLabel;
     private JPanel buttonPanel, cpsPanel, logoPanel;
+    private JButton refreshButton, cancelButton, hotkeyButton, hotkeyCancelButton;
     private Autoclicker autoClicker;
     private boolean isClicking = false;
     private boolean darkMode = false;
@@ -45,13 +50,9 @@ public class AutoclickerUI extends JFrame {
     private static final String THEME_KEY = "theme";
     private Preferences preferences;
     private JComboBox<String> programChoice;
-    private JLabel programLabel;
-    private JButton refreshButton, cancelButton;
-    private static final String REFRESH_ICON_PATH = "./img/refresh.png";
-    private static final String CANCEL_ICON_PATH = "./img/cancel.png";
-    private JButton hotkeyButton;
-    private JLabel hotkeyLabel;
     private int assignedKey = KeyEvent.VK_UNDEFINED;
+    private int assignedMouseButton = -1; // -1 indicates no mouse button is assigned
+    private Timer mouseHoldTimer; // Timer to detect mouse button hold
 
     public AutoclickerUI() {
         preferences = Preferences.userRoot().node(PREFS_NAME);
@@ -85,15 +86,15 @@ public class AutoclickerUI extends JFrame {
         programChoice.setFont(customFont);
         loadRunningPrograms();
 
-        refreshButton = new JButton(new ImageIcon(new ImageIcon(REFRESH_ICON_PATH).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        refreshButton = new JButton(new ImageIcon(new ImageIcon("./img/refresh.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
         refreshButton.setPreferredSize(new Dimension(25, 25));
         refreshButton.addActionListener(e -> loadRunningPrograms());
 
-        cancelButton = new JButton(new ImageIcon(new ImageIcon(CANCEL_ICON_PATH).getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        cancelButton = new JButton(new ImageIcon(new ImageIcon("./img/cancel.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
         cancelButton.setPreferredSize(new Dimension(25, 25));
         cancelButton.addActionListener(e -> programChoice.setSelectedItem("Specify a program"));
 
-        ImageIcon logoIconOriginal = new ImageIcon("./img/refinelogo.png");
+        ImageIcon logoIconOriginal = new ImageIcon("./img/translogo.png");
         Image image = logoIconOriginal.getImage();
         Image newimg = image.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
         ImageIcon logoIcon = new ImageIcon(newimg);
@@ -101,13 +102,13 @@ public class AutoclickerUI extends JFrame {
         logoPanel = new JPanel();
         logoPanel.add(logoLabel);
 
-        toggleButton = new JToggleButton("Status: Inactive");
+        toggleButton = new JToggleButton("Inactive");
         themeToggleButton = new JToggleButton(darkMode ? "Theme: Dark" : "Theme: Light");
 
         toggleButton.setUI(new CustomToggleButtonUI());
         themeToggleButton.setUI(new CustomToggleButtonUI());
 
-        toggleButtonLabel = new JLabel("Status: Inactive");
+        toggleButtonLabel = new JLabel("Inactive");
         themeToggleButtonLabel = new JLabel(darkMode ? "Theme: Dark" : "Theme: Light");
 
         toggleButton.addActionListener(e -> {
@@ -124,12 +125,23 @@ public class AutoclickerUI extends JFrame {
         toggleButton.setFont(customFont);
         themeToggleButton.setFont(customFont);
 
-        hotkeyLabel = new JLabel("Assign Hotkey:");
+        hotkeyLabel = new JLabel("Assign CPS Hotkey:");
         hotkeyLabel.setFont(customFont);
 
         hotkeyButton = new JButton("Unassigned");
         hotkeyButton.setFont(customFont);
         hotkeyButton.addActionListener(e -> assignHotkey());
+
+        hotkeyCancelButton = new JButton(new ImageIcon(new ImageIcon("./img/cancel.png").getImage().getScaledInstance(23, 23, Image.SCALE_SMOOTH)));
+        hotkeyCancelButton.setPreferredSize(new Dimension(29, 29));
+        hotkeyCancelButton.addActionListener(e -> {
+            assignedKey = KeyEvent.VK_UNDEFINED;
+            assignedMouseButton = -1;
+            hotkeyButton.setText("Unassigned");
+            if (isClicking) {
+                toggleClicking();
+            }
+        });
 
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         buttonPanel.add(toggleButtonLabel);
@@ -159,6 +171,8 @@ public class AutoclickerUI extends JFrame {
         cpsPanel.add(hotkeyLabel, gbc);
         gbc.gridx = 1;
         cpsPanel.add(hotkeyButton, gbc);
+        gbc.gridx = 2;
+        cpsPanel.add(hotkeyCancelButton, gbc);
 
         add(logoPanel, BorderLayout.NORTH);
         add(cpsPanel, BorderLayout.CENTER);
@@ -171,22 +185,15 @@ public class AutoclickerUI extends JFrame {
         // Start continuous mouse position check
         startMousePositionCheck();
 
-        // Start listening for key presses
-        addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {}
+        // Register global key and mouse listeners
+        try {
+            GlobalScreen.registerNativeHook();
+        } catch (NativeHookException ex) {
+            ex.printStackTrace();
+        }
 
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == assignedKey) {
-                    toggleClicking();
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {}
-        });
-        setFocusable(true);
+        GlobalScreen.addNativeKeyListener(new GlobalKeyListener());
+        GlobalScreen.addNativeMouseListener(new GlobalMouseListener());
     }
 
     private void loadRunningPrograms() {
@@ -216,7 +223,8 @@ public class AutoclickerUI extends JFrame {
     private void toggleTheme() {
         darkMode = !darkMode;
         preferences.putBoolean(THEME_KEY, darkMode); // Save the theme preference
-        updateLabels();
+        themeToggleButton.setText(darkMode ? "Theme: Dark" : "Theme: Light");
+        updateUI();
     }
 
     private void updateUI() {
@@ -230,8 +238,6 @@ public class AutoclickerUI extends JFrame {
         cpsLabel.setForeground(textColor);
         cpsChoice.setBackground(backgroundColor);
         cpsChoice.setForeground(textColor);
-        toggleButton.setForeground(textColor);
-        toggleButtonLabel.setForeground(textColor);
         themeToggleButton.setForeground(textColor);
         themeToggleButtonLabel.setForeground(textColor);
         programLabel.setForeground(textColor);
@@ -240,19 +246,18 @@ public class AutoclickerUI extends JFrame {
         hotkeyLabel.setForeground(textColor);
         hotkeyButton.setBackground(backgroundColor);
         hotkeyButton.setForeground(textColor);
+        toggleButton.setForeground(isClicking ? Color.GREEN : Color.RED);
+        toggleButtonLabel.setForeground(isClicking ? Color.GREEN : Color.RED);
     }
 
     private void updateLabels() {
-        toggleButton.setText(isClicking ? "Status: Active" : "Status: Inactive");
-        themeToggleButton.setText(darkMode ? "Theme: Dark" : "Theme: Light");
-        toggleButtonLabel.setText(isClicking ? "Status: Active" : "Status: Inactive");
-        themeToggleButtonLabel.setText(darkMode ? "Theme: Dark" : "Theme: Light");
-        updateUI();
+        toggleButton.setText(isClicking ? "Active" : "Inactive");
+        toggleButtonLabel.setText(isClicking ? "Active" : "Inactive");
     }
 
     // Method to assign a hotkey
     private void assignHotkey() {
-        hotkeyButton.setText("Press a key...");
+        hotkeyButton.setText("Press a key or mouse button...");
         KeyListener keyListener = new KeyListener() {
             @Override
             public void keyTyped(KeyEvent e) {}
@@ -260,8 +265,10 @@ public class AutoclickerUI extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 assignedKey = e.getKeyCode();
+                assignedMouseButton = -1;
                 hotkeyButton.setText(KeyEvent.getKeyText(assignedKey));
                 removeKeyListener(this);
+                GlobalScreen.removeNativeMouseListener(mouseListener);
             }
 
             @Override
@@ -270,6 +277,119 @@ public class AutoclickerUI extends JFrame {
         addKeyListener(keyListener);
         setFocusable(true);
         requestFocusInWindow();
+
+        mouseListener = new NativeMouseInputListener() {
+            @Override
+            public void nativeMouseClicked(NativeMouseEvent e) {}
+
+            @Override
+            public void nativeMousePressed(NativeMouseEvent e) {
+                assignedKey = KeyEvent.VK_UNDEFINED;
+                assignedMouseButton = e.getButton();
+                String buttonText = switch (assignedMouseButton) {
+                    case NativeMouseEvent.BUTTON1 -> "LMB";
+                    case NativeMouseEvent.BUTTON2 -> "MMB";
+                    case NativeMouseEvent.BUTTON3 -> "RMB";
+                    default -> "Unassigned";
+                };
+                hotkeyButton.setText(buttonText);
+                GlobalScreen.removeNativeMouseListener(this);
+            }
+
+            @Override
+            public void nativeMouseReleased(NativeMouseEvent e) {
+                if (e.getButton() == assignedMouseButton && mouseHoldTimer != null && mouseHoldTimer.isRunning()) {
+                    mouseHoldTimer.stop();
+                    if (isClicking) {
+                        toggleClicking();
+                    }
+                }
+            }
+
+            @Override
+            public void nativeMouseMoved(NativeMouseEvent e) {}
+
+            @Override
+            public void nativeMouseDragged(NativeMouseEvent e) {}
+        };
+
+        GlobalScreen.addNativeMouseListener(mouseListener);
+    }
+
+    private NativeMouseInputListener mouseListener;
+
+    private class GlobalKeyListener implements NativeKeyListener {
+        @Override
+        public void nativeKeyPressed(NativeKeyEvent e) {
+            if (e.getKeyCode() == assignedKey) {
+                toggleClicking();
+            }
+        }
+
+        @Override
+        public void nativeKeyReleased(NativeKeyEvent e) {}
+
+        @Override
+        public void nativeKeyTyped(NativeKeyEvent e) {}
+    }
+
+    private class GlobalMouseListener implements NativeMouseInputListener {
+        @Override
+        public void nativeMouseClicked(NativeMouseEvent e) {}
+
+        @Override
+        public void nativeMousePressed(NativeMouseEvent e) {
+            if (assignedMouseButton != -1 && e.getButton() == assignedMouseButton) {
+                if (mouseHoldTimer != null && mouseHoldTimer.isRunning()) {
+                    mouseHoldTimer.stop();
+                }
+                mouseHoldTimer = new Timer(500, evt -> {
+                    if (e.getButton() == assignedMouseButton && !autoClicker.isAutomatedClick()) {
+                        startAutoClicking();
+                    }
+                });
+                mouseHoldTimer.setRepeats(false);
+                mouseHoldTimer.start();
+            }
+        }
+
+        @Override
+        public void nativeMouseReleased(NativeMouseEvent e) {
+            if (e.getButton() == assignedMouseButton && mouseHoldTimer != null && mouseHoldTimer.isRunning()) {
+                mouseHoldTimer.stop();
+            }
+            if (e.getButton() == assignedMouseButton && !autoClicker.isAutomatedClick()) {
+                stopAutoClicking();
+            }
+        }
+
+        @Override
+        public void nativeMouseMoved(NativeMouseEvent e) {}
+
+        @Override
+        public void nativeMouseDragged(NativeMouseEvent e) {}
+    }
+
+    private void startAutoClicking() {
+        if (!isClicking) {
+            String selectedProgram = (String) programChoice.getSelectedItem();
+            int cps = cpsChoice.getItemAt(cpsChoice.getSelectedIndex());
+            if (selectedProgram == null || selectedProgram.equals("Specify a program")) {
+                autoClicker.startClicking(cps, null); // No specific program
+            } else {
+                autoClicker.startClicking(cps, selectedProgram);
+            }
+            isClicking = true;
+            updateLabels();
+        }
+    }
+
+    private void stopAutoClicking() {
+        if (isClicking) {
+            autoClicker.stopClicking();
+            isClicking = false;
+            updateLabels();
+        }
     }
 
     // New method to continuously check mouse position and print application name

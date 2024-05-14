@@ -7,8 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class CustomToggleButtonUI extends BasicToggleButtonUI {
-    private final Color offColor = Color.RED;
-    private final Color onColor = Color.GREEN;
+    private final Color offColor = Color.decode("#72A0C1");
+    private final Color onColor = Color.decode("#002D62");
     private final Color handleColor = Color.WHITE;
     private double animationPosition = 0;
     private Timer timer;
