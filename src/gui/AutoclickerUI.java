@@ -9,6 +9,8 @@ import java.awt.FontFormatException;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -47,6 +49,9 @@ public class AutoclickerUI extends JFrame {
     private JButton refreshButton, cancelButton;
     private static final String REFRESH_ICON_PATH = "./img/refresh.png";
     private static final String CANCEL_ICON_PATH = "./img/cancel.png";
+    private JButton hotkeyButton;
+    private JLabel hotkeyLabel;
+    private int assignedKey = KeyEvent.VK_UNDEFINED;
 
     public AutoclickerUI() {
         preferences = Preferences.userRoot().node(PREFS_NAME);
@@ -88,7 +93,7 @@ public class AutoclickerUI extends JFrame {
         cancelButton.setPreferredSize(new Dimension(25, 25));
         cancelButton.addActionListener(e -> programChoice.setSelectedItem("Specify a program"));
 
-        ImageIcon logoIconOriginal = new ImageIcon("./img/translogo.png");
+        ImageIcon logoIconOriginal = new ImageIcon("./img/refinelogo.png");
         Image image = logoIconOriginal.getImage();
         Image newimg = image.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
         ImageIcon logoIcon = new ImageIcon(newimg);
@@ -119,6 +124,13 @@ public class AutoclickerUI extends JFrame {
         toggleButton.setFont(customFont);
         themeToggleButton.setFont(customFont);
 
+        hotkeyLabel = new JLabel("Assign Hotkey:");
+        hotkeyLabel.setFont(customFont);
+
+        hotkeyButton = new JButton("Unassigned");
+        hotkeyButton.setFont(customFont);
+        hotkeyButton.addActionListener(e -> assignHotkey());
+
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         buttonPanel.add(toggleButtonLabel);
         buttonPanel.add(toggleButton);
@@ -142,6 +154,11 @@ public class AutoclickerUI extends JFrame {
         cpsPanel.add(refreshButton, gbc);
         gbc.gridx = 3;
         cpsPanel.add(cancelButton, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        cpsPanel.add(hotkeyLabel, gbc);
+        gbc.gridx = 1;
+        cpsPanel.add(hotkeyButton, gbc);
 
         add(logoPanel, BorderLayout.NORTH);
         add(cpsPanel, BorderLayout.CENTER);
@@ -153,6 +170,23 @@ public class AutoclickerUI extends JFrame {
 
         // Start continuous mouse position check
         startMousePositionCheck();
+
+        // Start listening for key presses
+        addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {}
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == assignedKey) {
+                    toggleClicking();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {}
+        });
+        setFocusable(true);
     }
 
     private void loadRunningPrograms() {
@@ -186,7 +220,7 @@ public class AutoclickerUI extends JFrame {
     }
 
     private void updateUI() {
-        Color backgroundColor = darkMode ? Color.decode("#141414") : Color.decode("#FFFFFF");
+        Color backgroundColor = darkMode ? Color.decode("#141414") : Color.decode("#ffffff");
         Color textColor = darkMode ? Color.white : Color.black;
 
         cpsPanel.setBackground(backgroundColor);
@@ -203,6 +237,9 @@ public class AutoclickerUI extends JFrame {
         programLabel.setForeground(textColor);
         programChoice.setBackground(backgroundColor);
         programChoice.setForeground(textColor);
+        hotkeyLabel.setForeground(textColor);
+        hotkeyButton.setBackground(backgroundColor);
+        hotkeyButton.setForeground(textColor);
     }
 
     private void updateLabels() {
@@ -213,13 +250,35 @@ public class AutoclickerUI extends JFrame {
         updateUI();
     }
 
+    // Method to assign a hotkey
+    private void assignHotkey() {
+        hotkeyButton.setText("Press a key...");
+        KeyListener keyListener = new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {}
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                assignedKey = e.getKeyCode();
+                hotkeyButton.setText(KeyEvent.getKeyText(assignedKey));
+                removeKeyListener(this);
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {}
+        };
+        addKeyListener(keyListener);
+        setFocusable(true);
+        requestFocusInWindow();
+    }
+
     // New method to continuously check mouse position and print application name
     private void startMousePositionCheck() {
         Timer timer = new Timer(500, e -> {
             List<String> titles = ApplicationFocusHelper.getTopLevelWindowTitles();
             for (String title : titles) {
                 if (ApplicationFocusHelper.isMouseOverAndFocusedWindow(title)) {
-//                    System.out.println("Mouse is over: " + title);
+                    // System.out.println("Mouse is over: " + title);
                     break;
                 }
             }
