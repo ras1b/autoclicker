@@ -1,10 +1,17 @@
 package features;
 
-import javax.swing.plaf.basic.BasicToggleButtonUI;
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.AbstractButton;
+import javax.swing.JComponent;
+import javax.swing.JToggleButton;
+import javax.swing.Timer;
+import javax.swing.plaf.basic.BasicToggleButtonUI;
 
 public class CustomToggleButtonUI extends BasicToggleButtonUI {
     private final Color offColor = Color.decode("#72A0C1");

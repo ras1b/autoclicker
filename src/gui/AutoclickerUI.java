@@ -42,7 +42,7 @@ public class AutoclickerUI extends JFrame {
     private JComboBox<Integer> cpsChoice;
     private JToggleButton toggleButton, themeToggleButton;
     private JLabel cpsLabel, toggleButtonLabel, themeToggleButtonLabel, hotkeyLabel, programLabel;
-    private JPanel buttonPanel, cpsPanel, logoPanel;
+    private JPanel buttonPanel, cpsPanel, logoPanel, footerPanel;
     private JButton refreshButton, cancelButton, hotkeyButton, hotkeyCancelButton;
     private Autoclicker autoClicker;
     private boolean isClicking = false;
@@ -61,7 +61,7 @@ public class AutoclickerUI extends JFrame {
         darkMode = preferences.getBoolean(THEME_KEY, false); // Load the saved theme preference
 
         setTitle("Autoclicker by ras1b [v1.0]");
-        setSize(500, 300);
+        setSize(500, 350); // Increased height by 50
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setIconImage(new ImageIcon("./img/logo.png").getImage());
@@ -176,9 +176,40 @@ public class AutoclickerUI extends JFrame {
         gbc.gridx = 2;
         cpsPanel.add(hotkeyCancelButton, gbc);
 
+        // Adding button panel and footer panel in a vertical box layout
+        JPanel southPanel = new JPanel(new BorderLayout());
+        southPanel.add(buttonPanel, BorderLayout.NORTH);
+
+        // Footer panel with social media icons and copyright text
+        footerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        JLabel copyrightLabel = new JLabel("Copyright " + java.time.Year.now().getValue() + " All rights reserved - Developed by ras1b");
+        copyrightLabel.setFont(customFont);
+
+        JButton gitlabButton = new JButton(new ImageIcon(new ImageIcon("./img/gitlab.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        gitlabButton.setPreferredSize(new Dimension(25, 25));
+        gitlabButton.addActionListener(e -> openURL("https://gitlab.com/ras1b"));
+
+        JButton githubButton = new JButton(new ImageIcon(new ImageIcon("./img/github.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        githubButton.setPreferredSize(new Dimension(25, 25));
+        githubButton.addActionListener(e -> openURL("https://github.com/ras1b/autoclicker"));
+
+        JButton discordButton = new JButton(new ImageIcon(new ImageIcon("./img/discord.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+        discordButton.setPreferredSize(new Dimension(25, 25));
+        discordButton.addActionListener(e -> {
+            copyToClipboard("ras1b");
+            showPopup("Copied ras1b's Discord username");
+        });
+
+        footerPanel.add(copyrightLabel);
+        footerPanel.add(gitlabButton);
+        footerPanel.add(githubButton);
+        footerPanel.add(discordButton);
+
+        southPanel.add(footerPanel, BorderLayout.SOUTH);
+
         add(logoPanel, BorderLayout.NORTH);
         add(cpsPanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
+        add(southPanel, BorderLayout.SOUTH);
 
         autoClicker = new Autoclicker();
         updateUI(); // Apply the saved theme preference
@@ -235,6 +266,7 @@ public class AutoclickerUI extends JFrame {
         cpsPanel.setBackground(backgroundColor);
         buttonPanel.setBackground(backgroundColor);
         logoPanel.setBackground(backgroundColor);
+        footerPanel.setBackground(backgroundColor);
         getContentPane().setBackground(backgroundColor);
         cpsLabel.setForeground(textColor);
         cpsChoice.setBackground(backgroundColor);
@@ -249,6 +281,7 @@ public class AutoclickerUI extends JFrame {
         hotkeyButton.setForeground(textColor);
         toggleButton.setForeground(isClicking ? Color.GREEN : Color.RED);
         toggleButtonLabel.setForeground(isClicking ? Color.GREEN : Color.RED);
+
         themeToggleButtonLabel.setText(darkMode ? "Dark Mode" : "Light Mode");
     }
 
@@ -260,7 +293,7 @@ public class AutoclickerUI extends JFrame {
         updateUI();
     }
 
- // Method to assign a hotkey
+    // Method to assign a hotkey
     private void assignHotkey() {
         hotkeyButton.setText("Press a key or mouse button...");
 
@@ -331,8 +364,6 @@ public class AutoclickerUI extends JFrame {
         GlobalScreen.addNativeKeyListener(tempKeyListener[0]);
         GlobalScreen.addNativeMouseListener(tempMouseListener);
     }
-
-
 
     private final NativeKeyListener globalKeyListener = new NativeKeyListener() {
         @Override
@@ -416,6 +447,35 @@ public class AutoclickerUI extends JFrame {
                 }
             }
         });
+        timer.start();
+    }
+
+    // Method to open a URL in the default web browser
+    private void openURL(String url) {
+        try {
+            java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Method to copy text to the clipboard
+    private void copyToClipboard(String text) {
+        java.awt.datatransfer.StringSelection stringSelection = new java.awt.datatransfer.StringSelection(text);
+        java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, null);
+    }
+
+    // Method to show a popup message
+    private void showPopup(String message) {
+        final JFrame popup = new JFrame();
+        popup.setUndecorated(true);
+        popup.setSize(200, 50);
+        popup.setLayout(new FlowLayout());
+        popup.add(new JLabel(message));
+        popup.setLocationRelativeTo(this);
+        popup.setVisible(true);
+        Timer timer = new Timer(1000, e -> popup.setVisible(false)); // 1 second popup
+        timer.setRepeats(false);
         timer.start();
     }
 
